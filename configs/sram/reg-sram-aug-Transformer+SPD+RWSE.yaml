@@ -1,0 +1,100 @@
+out_dir: results
+metric_best: mae
+metric_agg: argmin
+num_workers: 6
+wandb:
+  use: False
+  project: SRAM
+dataset:
+  format: SRAM
+  name: ssram+digtime
+  task: graph
+  task_type: regression
+  split_mode: standard
+  transductive: False
+  node_encoder: True
+  node_encoder_name: TypeDictNode+SPD+RWSE
+  node_encoder_num_types: 3
+  node_encoder_bn: False
+  edge_encoder: True
+  edge_encoder_name: TypeDictEdge
+  edge_encoder_num_types: 8
+  edge_encoder_bn: False
+  # added by shan
+  num_hops: 1
+  add_target_edges: True
+  edge_negative_sampling_ratio: 0.5
+  to_undirected: True
+  shuffle_split: True
+  num_sampler: 6
+  sample_rate: 
+  - 1.0
+  - 1.0
+posenc_SPD:
+  enable: True
+  max_dist: 350
+  dim_pe: 36
+posenc_RWSE:
+  enable: True
+  kernel:
+    times_func: range(1, 20)
+  model: Linear
+  dim_pe: 36
+  raw_norm_type: BatchNorm
+train:
+  mode: custom
+  batch_size: 8
+  eval_period: 1
+  ckpt_period: 2
+  ckpt_best: True
+  ckpt_clean: False
+  auto_resume: True
+# pretrained:
+#   dir: /data1/shenshan/dgl/GraphGPS/results/sram-aug-GPS+DRNL
+#   freeze_main: True
+#   reset_prediction_head: True
+model:
+  type: GPSModel
+  loss_fun: mse
+  edge_decoding: dot
+  graph_pooling: mean
+gt:
+  layer_type: None+Transformer
+  layers: 4
+  n_heads: 4
+  dim_hidden: 112  # `gt.dim_hidden` must match `gnn.dim_inner`
+  dropout: 0.05
+  attn_dropout: 0.5
+  layer_norm: True
+  batch_norm: False
+gnn:
+  head: san_graph_for_reg
+  layers_pre_mp: 0
+  layers_post_mp: 2  # Not used when `gnn.head: san_graph`
+  dim_inner: 112  # `gt.dim_hidden` must match `gnn.dim_inner`
+  batchnorm: True
+  act: relu
+  dropout: 0.0
+  agg: mean
+  normalize_adj: False
+  l2norm: False
+  cir_statis_proj: True
+optim:
+  clip_grad_norm: True
+  clip_grad_norm_value: 5.0
+  optimizer: adamW
+  weight_decay: 1e-5
+  base_lr: 0.0005
+  max_epoch: 200
+  scheduler: cosine_with_warmup
+  num_warmup_epochs: 5
+#optim:
+#  clip_grad_norm: True
+#  optimizer: adamW
+#  weight_decay: 1e-5
+#  base_lr: 0.0001
+#  max_epoch: 100
+#  scheduler: reduce_on_plateau
+#  reduce_factor: 0.5
+#  schedule_patience: 5
+#  min_lr: 1e-6

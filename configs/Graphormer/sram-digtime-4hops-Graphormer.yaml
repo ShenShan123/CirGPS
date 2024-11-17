@@ -1,0 +1,66 @@
+out_dir: results
+metric_best: accuracy
+num_workers: 6
+wandb:
+  use: False
+  project: SRAM_8T_digitized_timing_top_fast
+dataset:
+  format: SRAM
+  name: 8T_digitized_timing_top_fast
+  task: graph
+  task_type: classification
+  num_hops: 4
+  split_mode: standard
+  transductive: False
+  node_encoder: True
+  node_encoder_name: TypeDictNode+GraphormerBias
+  node_encoder_num_types: 3
+  node_encoder_bn: False
+  edge_encoder: True
+  edge_encoder_name: TypeDictEdge
+  edge_encoder_num_types: 2
+  edge_encoder_bn: False
+  add_target_edges: False
+posenc_GraphormerBias:
+  enable: True
+  node_degrees_only: True
+  num_spatial_types: 128
+  num_in_degrees: 1024
+  num_out_degrees: 1024
+train:
+  mode: custom
+  batch_size: 4
+  eval_period: 1
+  ckpt_period: 100
+model:
+  type: Graphormer
+  loss_fun: weighted_cross_entropy
+  edge_decoding: dot
+  graph_pooling: graph_token
+graphormer:
+  num_layers: 4
+  num_heads: 4
+  embed_dim: 96
+  dropout: 0.0
+  attention_dropout: 0.1
+  mlp_dropout: 0.1
+  input_dropout: 0.1
+gnn:
+  head: graphormer_graph
+  layers_pre_mp: 0
+  layers_post_mp: 3  # Not used when `gnn.head: san_graph`
+  dim_inner: 96  # `gt.dim_hidden` must match `gnn.dim_inner`
+  batchnorm: True
+  act: relu
+  dropout: 0.0
+  agg: mean
+  normalize_adj: False
+optim:
+  clip_grad_norm: True
+  clip_grad_norm_value: 5.0
+  optimizer: adamW
+  weight_decay: 1e-5
+  base_lr: 0.002
+  max_epoch: 400
+  scheduler: cosine_with_warmup
+  num_warmup_epochs: 5
