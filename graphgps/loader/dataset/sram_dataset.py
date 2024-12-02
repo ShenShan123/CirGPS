@@ -117,13 +117,23 @@ class SealSramDataset(InMemoryDataset):
             y_reg[y_reg < 0] = 0.0
             y_reg[y_reg > 1] = 1.0
             hist, bin_edges = torch.histogram(y_reg, bins=6)
-            y[y_reg <= bin_edges[2]] = 0
-            y[(y_reg > bin_edges[2]) & (y_reg <= bin_edges[3])] = 1
-            y[(y_reg > bin_edges[3]) & (y_reg <= bin_edges[4])] = 2
-            y[y_reg > bin_edges[4]] = 3
+            logging.info(f'DEBUG: y_reg distribution: mean={hist.mean()}')
+            for i, (start, end) in enumerate(zip(bin_edges[:-1], bin_edges[1:])):
+                logging.info(
+                    f'       bin {i}: [{start:.2f}, {end:.2f}]: '
+                    f'{hist[i]} ({hist[i] / hist.sum() * 100:.2f}%)'
+                )
+
+            # y[y_reg == 0.0] = 0
+            # y[y_reg > 0.0] = 1
+            y[y_reg < bin_edges[2]] = 0
+            y[(y_reg >= bin_edges[2]) & (y_reg < bin_edges[3])] = 1
+            y[(y_reg >= bin_edges[3]) & (y_reg < bin_edges[4])] = 2
+            y[y_reg >= bin_edges[4]] = 3
             self._data.y_reg = y_reg
             self._data.y = y
-            print("DEBUG: unique(self._data.y)", torch.unique(y, return_counts=True))
+            logging.info(f"DEBUG: unique(self._data.y) {torch.unique(y, return_counts=True)}")
+            # assert 0
 
     def sram_graph_load(self, name, raw_path):
         logging.info(f"raw_path: {raw_path}")
@@ -358,7 +368,7 @@ class SealSramDataset(InMemoryDataset):
             links = pos_edge_index.view(-1).unique()
             # Cg for src and dst nodes in pos_edge
             targets = graph.tar_node_y[links].view(-1)
-            nonezero_mask = targets > 0.0
+            zerocap_mask = targets > 0.0
             # links = links[nonezero_mask]
             # targets = targets[nonezero_mask]
             labels = labels = torch.tensor(
@@ -508,8 +518,10 @@ class SealSramDataset(InMemoryDataset):
         if self.task_type == 'regression' or \
             self.task_type == 'classification':
             return os.path.join(self.root, 'processed')
-        elif self.task_type == 'node_regression' or self.task_type == 'node_classification':
+        elif self.task_type == 'node_regression':
             return os.path.join(self.root, 'processed_for_nodes')
+        elif self.task_type == 'node_classification':
+            return os.path.join(self.root, 'processed_for_nodes/hop2_w_zero')
         else:
             raise ValueError(f"No defination of task {self.task_type}!")
 
