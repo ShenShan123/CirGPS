@@ -25,9 +25,14 @@ These codes are tested on our platform with pytorch=1.13.1, cuda=11.7.
 
 Firstly, you need to install Git Large File Storage [LFS](https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage).
 
-Then, you can directly use our conda config file
+Then, you can directly use our conda config file.
 ``` bash
-conda env create -f cirgps.yaml
+conda env create -f environment.yaml
+```
+If you enconter any problem, try pip instead,
+```bash
+conda create -n cirgps
+pip install -r requirements.txt
 ```
 or use the oringal environment of [GraphGPS](https://github.com/rampasek/GraphGPS.git).
 
@@ -35,8 +40,10 @@ or use the oringal environment of [GraphGPS](https://github.com/rampasek/GraphGP
 In the 'configs/sram' floder, the files starting with 'sram-' are for the link-prediction task, those starting with 'reg-' are for the edge-regression task.
 
 ```bash
-conda activate graphgps
-
+conda activate cirgps
+```
+To conduct training, type
+```bash
 # Running an arbitrary config file in the `configs` folder
 python main.py --cfg configs/sram/<config_file>.yaml 
 ```
