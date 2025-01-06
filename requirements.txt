@@ -1,6 +1,6 @@
 apex==0.9.10dev
 axial_positional_embedding==0.2.1
-dgl==2.2.1
+# dgl==2.2.1
 einops==0.8.0
 joblib==1.1.1
 local_attention==1.9.3
@@ -13,7 +13,7 @@ performer_pytorch==1.1.4
 psutil==5.9.0
 PyYAML==6.0.1
 PyYAML==6.0.2
-rdkit==2024.3.6
+# rdkit==2024.3.6
 scikit_learn==1.0.2
 scipy==1.7.3
 setuptools==65.6.3

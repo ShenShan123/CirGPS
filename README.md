@@ -27,9 +27,13 @@ Firstly, you need to install Git Large File Storage [LFS](https://docs.github.co
 
 Then, you can directly use our conda config file.
 ``` bash
-conda env create -f environment.yaml
+conda env create -f environment.yml
 ```
-If you enconter any problem, try pip instead,
+If you get error when installing pyg_lib/torch_scatter/torch_sparse, please delete those packages in environment.yml, and install them manually.
+``` bash
+pip install pyg-lib torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-1.13.1+cu117.html
+```
+You can also try pip instead,
 ```bash
 conda create -n cirgps
 pip install -r requirements.txt
